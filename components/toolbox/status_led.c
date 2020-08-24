@@ -31,7 +31,8 @@ void status_led_task(void *_args) {
 }
 
 
-void status_led_init(uint16_t interval, uint8_t pin) {
+void status_led_init(uint16_t interval, uint8_t pin)
+{
    status_led_interval=interval;
    if(!status_led_is_init) {
       status_led_is_init=1;

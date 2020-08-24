@@ -52,7 +52,7 @@ static void _contacts_task(void* arg)
 }
 
 
-void contacts_clear()
+void contacts_delete()
 {
    if(taskHandle!=NULL) {
       vTaskDelete(taskHandle);

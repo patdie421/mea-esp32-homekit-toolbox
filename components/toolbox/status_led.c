@@ -87,7 +87,7 @@ void status_led_set_interval(uint16_t interval)
 }
 
 
-void status_led_set(on, off, count, wait)
+void status_led_set(uint16_t on, uint16_t off, uint16_t count, uint16_t wait)
 {
    status_led_interval_on=on;
    status_led_interval_off=off;

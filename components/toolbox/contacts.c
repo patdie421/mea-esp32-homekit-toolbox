@@ -57,6 +57,8 @@ void contacts_delete()
    if(taskHandle!=NULL) {
       vTaskDelete(taskHandle);
       taskHandle=NULL;
+      _nb_contacts=0;
+      _contacts=NULL;
    }
 }
 

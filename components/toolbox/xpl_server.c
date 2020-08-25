@@ -253,6 +253,17 @@ static void _xpl_send_hbeat(int16_t sock, char *source, char *type, int interval
 }
 
 
+static void _xpl_send_id(int16_t sock, char *source, int interval, char *version)
+{
+   char msg[256];
+
+   char *idMsg = "xpl-stat\n{\nhop=1\nsource=%s\ntarget=*\n}\id.basic\n{\nname=%s\nip=%s\ntype=%s\n}\n";
+   sprintf(msg, idMsg, source, name, ip, type);
+   
+   xpl_send_msg(sock, msg, strlen(msg));
+}
+
+
 static void _xplhb_timer_callback(void* arg)
 {
    _xpl_send_hbeat((int)arg, xpl_source, "basic", xpl_interval, xpl_version);
@@ -272,6 +283,15 @@ static int8_t _xpl_process_msg(int sock, struct xpl_msg_s *xpl_msg, int nb_value
          char *p=xpl_value_p("COMMAND", xpl_msg, nb_values);
          if(p && strcasecmp(p,"REQUEST")==0) { /* xpl-cmnd { hop=1 source=xpl-xxx target=* } hbeat.request { command=request } */
             _xpl_send_hbeat(sock, xpl_source, "basic", xpl_interval, xpl_version);
+            return 0;
+         }
+      }
+   }
+   else if(strcasecmp(xpl_msg[0].section,"XPL-CMND")==0) {
+      if(xpl_msg_has_section_name("ID.BASIC", xpl_msg, nb_values)==0) {
+         char *p=xpl_value_p("COMMAND", xpl_msg, nb_values);
+         if(p && strcasecmp(p,"REQUEST")==0) { /* xpl-cmnd { hop=1 source=xpl-xxx target=* } id.basic { command=request } */
+            _xpl_send_id(sock, xpl_source, xpl_interval, xpl_version);
             return 0;
          }
       }

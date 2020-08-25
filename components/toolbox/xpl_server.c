@@ -223,26 +223,22 @@ static void _xpl_send_current(int16_t sock, char *msg_type, char *source, char *
 
 void xpl_send_current_float(int16_t sock, char *msg_type, char *device, float value)
 {
-   if(xpl_socket!=-1) {
-      char _value[10];
-      snprintf(_value,sizeof(_value)-1,"%.2f",value);
-      _xpl_send_current(sock, msg_type, xpl_source, device, _value);
-   }
+   char _value[10];
+   snprintf(_value,sizeof(_value)-1,"%.2f",value);
+   _xpl_send_current(sock, msg_type, xpl_source, device, _value);
 }
 
 
 void xpl_send_current_hl(int16_t sock, char *msg_type, char *device, int8_t value)
 {
-   if(xpl_socket!=-1) {
-      char *_value = NULL;
-      if(value==0) {
-         _value="low"; 
-      }
-      else {
-         _value="high"; 
-      }
-      _xpl_send_current(sock, msg_type, xpl_source, device, _value);
+   char *_value = NULL;
+   if(value==0) {
+      _value="low"; 
    }
+   else {
+      _value="high"; 
+   }
+   _xpl_send_current(sock, msg_type, xpl_source, device, _value);
 }
 
 
@@ -364,8 +360,10 @@ CLEAN_UP:
    esp_timer_stop(xplhb_timer);
    esp_timer_delete(xplhb_timer);
    xpl_socket=-1;
-   shutdown(sock,0);
-   close(sock);
+   if(sock>=0) {
+      shutdown(sock,0);
+      close(sock);
+   }
    xpl_server_handle=NULL;
    stop_xpl_server=0;
    ESP_LOGI(TAG,"Down");

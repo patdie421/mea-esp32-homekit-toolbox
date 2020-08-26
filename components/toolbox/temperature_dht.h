@@ -8,6 +8,7 @@ float temperature_dht_get_h();
 float temperature_dht_get_t();
 
 int  temperature_dht_init(temperature_dht_callback_t cb_t, void *userdata_t, humidity_dht_callback_t cb_h, void *userdata_h);
+int  temperature_dht_init2(int8_t pin, temperature_dht_callback_t cb_t, void *userdata_t, temperature_dht_callback_t cb_h, void *userdata_h);
 void temperature_dht_task(void *_args);
 void temperature_dht_start();
 

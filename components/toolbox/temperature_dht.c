@@ -11,6 +11,8 @@
 #define SENSOR_TYPE DHT_TYPE_AM2301
 #define DHT_GPIO 26
 
+static int8_t dht_gpio = DHT_GPIO;
+
 static char *TAG = "dht";
 
 static int16_t temperature = 0;
@@ -38,6 +40,13 @@ int temperature_dht_init(temperature_dht_callback_t cb_t, void *userdata_t, temp
 }
 
 
+int temperature_dht_init2(int8_t pin, temperature_dht_callback_t cb_t, void *userdata_t, temperature_dht_callback_t cb_h, void *userdata_h)
+{
+   dht_gpio = pin;
+   return temperature_dht_init(cb_t, userdata_t, cb_h, userdata_h);
+}
+
+
 float temperature_dht_get_t()
 {
    return temperature / 10.0;
@@ -55,7 +64,7 @@ void temperature_dht_task(void *_args)
    // DHT sensors that come mounted on a PCB generally have
    // pull-up resistors on the data pin.  It is recommended
    // to provide an external pull-up resistor otherwise...
-   gpio_set_pull_mode(DHT_GPIO, GPIO_PULLUP_ONLY);
+   gpio_set_pull_mode(dht_gpio, GPIO_PULLUP_ONLY);
 
    while (1) {
       if (dht_read_data(SENSOR_TYPE, DHT_GPIO, &humidity, &temperature) == ESP_OK) {

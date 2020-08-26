@@ -21,7 +21,7 @@ struct temperature_ds18b20_data {
 
 #define MAX_SENSORS 8
 #define RESCAN_INTERVAL 720
-static const gpio_num_t SENSOR_GPIO = 5;
+static gpio_num_t SENSOR_GPIO = 5;
 static const uint32_t LOOP_DELAY_MS = 10000;
 
 static ds18x20_addr_t addrs[MAX_SENSORS];
@@ -40,6 +40,13 @@ int temperature_ds18b20_init(temperature_ds18b20_callback_t cb, void *userdata)
 }
 
 
+int temperature_ds18b20_init2(int8_t pin, temperature_ds18b20_callback_t cb, void *userdata)
+{
+   SENSOR_GPIO = pin;
+   return temperature_ds18b20_init(temperature_ds18b20_callback_t cb, void *userdata);
+}
+
+   
 float temperature_ds18b20_get()
 {
    return temps[0];

@@ -11,8 +11,8 @@
 static char *TAG = "contacts";
 
 static int _nb_contacts = 0;
-static struct contact_s *_contacts;
-
+static struct contact_s *_contacts = NULL;
+TaskHandle_t taskHandle = NULL;
 
 int8_t contacts_get(int8_t id)
 {
@@ -28,6 +28,11 @@ int8_t contacts_get(int8_t id)
 static void _contacts_task(void* arg)
 {
    for(;;) {
+      if(_nb_contacts<=0) {
+         vTaskDelay(1);
+         continue;
+      }
+
       for(int i=0;i<_nb_contacts;i++) {
          int v=0;
          for(int j=0;j<24;j++) {
@@ -43,6 +48,17 @@ static void _contacts_task(void* arg)
             _contacts[i].last_state = v;
          }
       }
+   }
+}
+
+
+void contacts_delete()
+{
+   if(taskHandle!=NULL) {
+      vTaskDelete(taskHandle);
+      taskHandle=NULL;
+      _nb_contacts=0;
+      _contacts=NULL;
    }
 }
 
@@ -71,6 +87,6 @@ void contacts_init(struct contact_s my_contacts[], int nb_contacts) {
 
    gpio_config(&io_conf);
 
-   xTaskCreate(_contacts_task, "contacts_task", 2560, NULL, 10, NULL);
+   xTaskCreate(_contacts_task, "contacts_task", 2560, NULL, 10, taskHanle);
 }
 

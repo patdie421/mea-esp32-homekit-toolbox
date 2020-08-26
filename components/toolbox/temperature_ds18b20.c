@@ -43,7 +43,7 @@ int temperature_ds18b20_init(temperature_ds18b20_callback_t cb, void *userdata)
 int temperature_ds18b20_init2(int8_t pin, temperature_ds18b20_callback_t cb, void *userdata)
 {
    SENSOR_GPIO = pin;
-   return temperature_ds18b20_init(temperature_ds18b20_callback_t cb, void *userdata);
+   return temperature_ds18b20_init(cb, userdata);
 }
 
    

@@ -87,6 +87,6 @@ void contacts_init(struct contact_s my_contacts[], int nb_contacts) {
 
    gpio_config(&io_conf);
 
-   xTaskCreate(_contacts_task, "contacts_task", 2560, NULL, 10, taskHanle);
+   xTaskCreate(_contacts_task, "contacts_task", 2560, NULL, 10, taskHandle);
 }
 

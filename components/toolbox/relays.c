@@ -4,13 +4,10 @@
 #include <esp_log.h>
 #include <esp_system.h>
 
-#include <nvs_flash.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <driver/gpio.h>
-
-#include <driver/gpio.h>
-
+#include <nvs_flash.h>
 #include "relays.h"
 
 

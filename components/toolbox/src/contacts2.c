@@ -22,17 +22,6 @@ static TaskHandle_t taskHandle = NULL;
 static xQueueHandle gpio_evt_queue = NULL;
 
 
-int8_t contacts2_get(int8_t id)
-{
-   if(id<_nb_contacts) {
-      return _contacts[id].state;
-   }
-   else {
-      return -1;
-   }
-}
-
-
 static void IRAM_ATTR gpio_isr_handler(void* arg)
 {
    uint32_t id = (uint32_t)arg;
@@ -78,20 +67,37 @@ static void _contacts2_task(void* arg)
 }
 
 
+int8_t contacts2_get(int8_t id)
+{
+   if(id<_nb_contacts) {
+      return _contacts[id].state;
+   }
+   else {
+      return -1;
+   }
+}
+
+
 void contacts2_init(struct contact2_s my_contacts[], int nb_contacts) {
    gpio_config_t io_conf;
    uint32_t gpio_input_pin_sel = 0;
 
-   _contacts = my_contacts;
-   _nb_contacts = nb_contacts;
-
+   // cleaning
    TaskHandle_t _taskHandle = taskHandle;
    if(_taskHandle) {
      taskHandle=NULL;
      vTaskDelete(_taskHandle);
    }
+   gpio_uninstall_isr_service();
+   if(gpio_evt_queue) {
+      vQueueDelete(gpio_evt_queue);
+   }
 
-   // init data and gpio mask
+   // store new config
+   _contacts = my_contacts;
+   _nb_contacts = nb_contacts;
+
+   // init data and construct gpio mask
    for(int i=0;i<_nb_contacts;i++) {
       _contacts[i].prev=-1;
       _contacts[i].flag=0;
@@ -102,19 +108,12 @@ void contacts2_init(struct contact2_s my_contacts[], int nb_contacts) {
    io_conf.pin_bit_mask = gpio_input_pin_sel;
    io_conf.intr_type = GPIO_INTR_ANYEDGE;
    io_conf.mode = GPIO_MODE_INPUT;
-   //enable pull-up mode
-   io_conf.pull_up_en = 1;
-   //disable pull-down mode
-   io_conf.pull_down_en = 0;
+   io_conf.pull_up_en = 1; //enable pull-up mode
+   io_conf.pull_down_en = 0; //disable pull-down mode
    gpio_config(&io_conf);
 
-   // isr configuration
-   gpio_uninstall_isr_service();
-   if(gpio_evt_queue) {
-      vQueueDelete(gpio_evt_queue);
-   }
+   // queue and isr configuration
    gpio_evt_queue = xQueueCreate(10, sizeof(uint32_t));
-
    gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);
    for(uint32_t i=0;i<_nb_contacts;i++) {
       gpio_isr_handler_add(_contacts[i].gpio_pin, gpio_isr_handler, (void *)i);

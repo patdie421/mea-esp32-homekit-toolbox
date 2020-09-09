@@ -12,7 +12,7 @@ static char *TAG = "contacts";
 
 static int _nb_contacts = 0;
 static struct contact_s *_contacts = NULL;
-static TaskHandle_t taskHandle = NULL;
+TaskHandle_t taskHandle = NULL;
 
 int8_t contacts_get(int8_t id)
 {

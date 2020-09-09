@@ -3,9 +3,9 @@
 #include <esp_wifi.h>
 #include <esp_log.h>
 #include <nvs_flash.h>
-
+#ifdef MEATOOLBOX_HOMEKIT
 #include <homekit/homekit.h>
-
+#endif
 #include "config.h"
 #include "tcp_server.h"
 
@@ -265,7 +265,9 @@ int tcp_network_config(int sock, struct mea_config_s *mea_config, int8_t mode, c
             tcp_send_data(sock, OK_STATUS);
             close(sock);
 //            vTaskDelay(1000 / portTICK_PERIOD_MS);
+#ifdef MEATOOLBOX_HOMEKIT
             homekit_server_reset();
+#endif
             nvs_flash_erase();
             esp_restart();
          }
